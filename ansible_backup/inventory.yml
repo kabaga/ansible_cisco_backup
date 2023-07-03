@@ -1,0 +1,24 @@
+---
+all:
+  children:
+    site:
+      children:
+        bldg_1:
+          children:
+            routers:
+              hosts:
+                10.0.20.107: # rtr.example.local:
+            switches:
+              hosts:
+                10.0.20.109: # sw.example.local:
+            firewalls:
+              hosts:
+                fw.example.local:
+  vars:
+    ansible_connection: network_cli
+    ansible_network_os: ios
+    ansible_user: ansible
+    ansible_password: Ansible3^auto
+    #ansible_become: yes
+    #ansible_become_method: enable
+

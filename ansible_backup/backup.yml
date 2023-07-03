@@ -1,0 +1,51 @@
+---
+- name: configuration backup
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+
+  vars:
+    backup_path: /home/$USER/backups
+    
+  tasks:
+    - name: show running-config
+      ios_command:
+        commands:
+        - "show run"
+      #host: "{{ ansible_host }}"
+      #username: <username>
+      #password: <password>
+      register: config
+    
+    - name: backup directory
+      file:
+        path: "{{ backup_path }}"
+        state: directory
+      run_once: yes
+      
+    - name: check directory is created
+      file:
+        path: "{{ backup_path }}/{{ inventory_hostname }}"
+        state: directory
+      
+    - name: get timestamp
+      command: date +%Y%m%d
+      register: timestamp
+    
+    - name: get year
+      command: date +%Y
+      register: year
+      
+    - name: get month
+      command: date +%m
+      register: month
+      
+    - name: get day
+      command: date +%d
+      register: day
+    
+    - name: save output
+      copy: 
+        content: "{{ config.stdout[0] }}"
+        #dest: "{{ backup_path }}/{{ inventory_hostname }}/running-config.config_{{ timestamp.stdout }}"
+        dest: "{{ backup_path }}/{{ year.stdout }}/{{ month.stdout }}/{{ day.stdout }}/{{ inventory_hostname }}_{{ timestamp.stdout }}.config"
